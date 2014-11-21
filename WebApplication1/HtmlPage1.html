@@ -1,0 +1,35 @@
+﻿<html>
+<head>
+</head>
+
+<body>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
+
+    <div class="name">name1</div>
+    <div class="name">nameé</div>
+
+    <script>
+
+var Total = 0;
+var json = result.d;
+obj = JSON.parse(json);
+for (var i = 0; i < obj.length; i++) {
+    var LatLng1 = new google.maps.LatLng(obj[i].Lat, obj[i].Lng);
+    var LatLng2 = new google.maps.LatLng(obj[i + 1].Lat, obj[i + 1].Lng);
+    var Distance = (google.maps.geometry.spherical.computeDistanceBetween(LatLng1, LatLng2) / 1000).toFixed(2);
+
+    Total += Distance;
+    alert(Total); //It is working but.Like this : 0.01 0.22 0.03 0.045
+    // I want to be 0.01+0.022+0.03+....=Total
+}
+
+alert(Total);  //Does not working !!
+
+        $(document).ready(function () {
+            $("name");
+        });
+    </script>
+    toto
+</body>
+
+</html>

@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+    <div id="fb-root"></div>
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
+
+
+    <script>
+        /*
+         *  The Facebook App ID
+         */
+        var FB_APPID = 1498810143705898;
+
+        /*
+         *	FACEBOOK Loading
+         */
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: FB_APPID,
+                fileUpload: true,
+                status: true, // check login status
+                cookie: true, // enable cookies to allow the server to access the session
+                xfbml: true,  // parse social plugins on this page
+                version: 'v2.1' // use version 2.1
+            });
+
+            FB.Event.subscribe('auth.authResponseChange', function (response) {
+                if (response.status === 'connected')
+                    $(document).trigger('fbload');  //  <---- THIS RIGHT HERE TRIGGERS A CUSTOM EVENT CALLED 'fbload'
+                else
+                    $(document).trigger('fbunload');
+            });
+        };
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+
+
+
+        // The Topic pour envoyer les images:
+        // http://stackoverflow.com/questions/4999024/facebook-graph-api-upload-photo-using-javascript
+
+        $(document).ready(function(){
+            $("#myForm").submit(function (e) {
+                e.preventDefault();
+
+                //var form = $(this);
+                //var formUrl = form.attr('action');
+                //var source = $('#source', form).val();
+
+
+                //var fd = new FormData();
+                //fd.append('source', $('#myFile')[0].files[0]);
+                //fd.append('message', "text");
+                var formElement = document.getElementById("myForm");
+                var formData = new FormData(formElement);
+
+                FB.api('/feed',
+                    'POST',
+                    formData,
+                    function (response) {
+                        if (!response || response.error) {
+                            alert(JSON.stringify(response.error));
+                        } else {
+                            alert('Published to stream - you might want to delete it now!');
+                        }
+                    }
+                );
+            });
+        });
+
+        $('#formImage').fileupload({
+            dataType: 'json',
+            forceIframeTransport: true, //force use iframe or will no work
+            autoUpload: true,
+            //facebook book response will be send as param
+            //you can use this page to save video (Graph Api) object on database
+            redirect: 'http://pathToYourServer?%s'
+        });
+
+        function post() {
+            FB.api("/feed",
+                "post",
+                {
+                    message: "Test!"
+                },
+                function (response) {
+                    if (!response || response.error) {
+                        alert(JSON.stringify(response.error));
+                    } else {
+                        alert("Votre message a été partagé !");
+                    }
+                }
+            );
+        }
+    </script>
+
+    <!-- scope: publish_actions,manage_pages,user_photos-->
+    <span class="fb-login-button" data-auto-logout-link="true" data-scope="" data-width="400" data-max-rows="1"></span>
+
+    <button onclick="post()">post!</button>
+    <div class="fb-activity" data-site="developers.facebook.com" data-action="likes, recommends, comments" data-colorscheme="light" data-header="true"></div>
+    
+    <!-- Send image
+    <form id="formImage" enctype="multipart/form-data" action="https://graph-video.facebook.com/me/photos" method="POST">
+        <input type="text" name="title">
+        <input type="text" name="description">
+        <input type="text" name="message">
+        <input type="file" name="file">
+        <button>Send</button>
+    </form>
+    -->
+</body>
+</html>
